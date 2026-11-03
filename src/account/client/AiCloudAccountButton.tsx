@@ -56,6 +56,7 @@ export function AiCloudAccountButton(props: Props) {
   const groupCatalog = useSyncExternalStore(props.catalog?.subscribe ?? noSubscription, props.catalog?.getSnapshot ?? noCatalog)
   const target = useSyncExternalStore(accountSurface.subscribe, accountSurface.getSnapshot)
   const firstCheck = useRef(false)
+  const startupPrompted = useRef(false)
   const [open, setOpen] = useState(false)
   const [account, setAccount] = useState<AiCloudAccountView>()
   const [config, setConfig] = useState<AiCloudPublicView>()
@@ -96,7 +97,7 @@ export function AiCloudAccountButton(props: Props) {
   const [qrImage, setQrImage] = useState<string>()
   const [balancePrompt, setBalancePrompt] = useState(false)
   const balanceDialog = useRef<HTMLDialogElement>(null)
-  const balancePrompted = useRef(false)
+  const balancePrompted = useRef<string>()
   useEffect(() => {
     if (codeCooldown <= 0 && resetCooldown <= 0) return
     const codeUntil = Date.now() + codeCooldown * 1000
@@ -113,10 +114,14 @@ export function AiCloudAccountButton(props: Props) {
       setBalancePrompt(false)
       return
     }
-    if (account.balance !== undefined && Number.isFinite(account.balance) && account.balance <= 0 && !balancePrompted.current) {
-      balancePrompted.current = true
+    const identity = JSON.stringify([account.gatewayBaseUrl, account.email])
+    if (account.balance !== undefined && Number.isFinite(account.balance) && account.balance < 5 && balancePrompted.current !== identity) {
+      balancePrompted.current = identity
       setBalancePrompt(true)
-    } else if (account.balance !== undefined && account.balance > 0) setBalancePrompt(false)
+    } else if (account.balance !== undefined && account.balance >= 5) {
+      balancePrompted.current = undefined
+      setBalancePrompt(false)
+    }
   }, [account])
   useEffect(() => {
     if (!balancePrompt) return
@@ -168,10 +173,27 @@ export function AiCloudAccountButton(props: Props) {
   useEffect(() => {
     if (firstCheck.current) return
     firstCheck.current = true
-    // Account setup is optional; users can configure their own model provider.
-    // Keep a signed-out first launch on the conversation surface.
     void refresh()
   }, [refresh])
+
+  useEffect(() => {
+    if (startupPrompted.current || busy || (account === undefined && error === undefined)) return
+    startupPrompted.current = true
+    if (account?.status !== 'signedIn') setOpen(true)
+  }, [account, busy, error])
+
+  useEffect(() => {
+    if (account?.status !== 'signedIn') return
+    const update = () => { if (document.visibilityState === 'visible') void refresh() }
+    const timer = window.setInterval(update, 60_000)
+    window.addEventListener('focus', update)
+    window.addEventListener('online', update)
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener('focus', update)
+      window.removeEventListener('online', update)
+    }
+  }, [account?.status, refresh])
 
   useEffect(() => {
     if (account?.autoLoginRetryable !== true || restoreAttempts.current >= 3) return
@@ -453,10 +475,14 @@ export function AiCloudAccountButton(props: Props) {
   const mediaModelGroups = groupModels(account?.mediaModels?.filter(model => `${model.groupName} ${groupMetadata(model.groupId)?.description ?? ''} ${model.modelId} ${model.mediaType}`.toLowerCase().includes(modelQuery.trim().toLowerCase())) ?? [])
   const connection = accountConnection(account, account === undefined && error !== undefined)
   const accountStatusText = props.t(`account.connection.${connection}`)
+  const lowBalance = signedIn && account.balance !== undefined && Number.isFinite(account.balance) && account.balance < 5
+  const triggerLabel = props.t(signedIn ? 'account.centerTitle' : 'account.trigger')
+  const balanceLabel = signedIn ? `${props.t(account.balanceFreshness === 'stale' ? 'account.lastBalance' : 'account.balance')} ${formatBalance(account)}` : undefined
+  const triggerDescription = [triggerLabel, balanceLabel, lowBalance ? props.t('account.recharge') : accountStatusText].filter(Boolean).join(' · ')
 
   return <>
-    <button className={css.trigger} data-zerowall-footer-action data-connection={connection} type="button" onClick={() => { setOpen(true); void refresh() }} title={`${props.t('account.trigger')} · ${accountStatusText}`} aria-label={props.t('account.trigger')}>
-      <span className={css.triggerIcon} data-zerowall-footer-icon><img src={brandIcon} width={18} height={18} alt="" aria-hidden="true" /><i className={css.statusDot} data-zerowall-footer-status-dot aria-hidden="true" /></span>{props.wide && <span>{props.t(signedIn ? 'account.centerTitle' : 'account.nav')}</span>}
+    <button className={css.trigger} data-zerowall-footer-action data-connection={connection} data-low-balance={lowBalance} data-signed-in={signedIn} type="button" onClick={() => { setOpen(true); void refresh() }} title={triggerDescription} aria-label={triggerDescription}>
+      <span className={css.triggerIcon} data-zerowall-footer-icon><img src={brandIcon} width={18} height={18} alt="" aria-hidden="true" /><i className={css.statusDot} data-zerowall-footer-status-dot aria-hidden="true" /></span>{props.wide && <span className={css.triggerText}><span>{props.t(signedIn ? 'account.centerTitle' : 'account.nav')}</span>{balanceLabel && <small>{balanceLabel}{lowBalance && <> · {props.t('account.recharge')}</>}</small>}</span>}
     </button>
     {(open || target) && createPortal(<div className={target ? css.embedded : css.backdrop} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setOpen(false) }}>
       <section className={css.panel} data-auth={!signedIn} role={target ? undefined : "dialog"} aria-modal={target ? undefined : true} aria-labelledby="zerowall-account-title">
@@ -543,7 +569,7 @@ export function AiCloudAccountButton(props: Props) {
             </details>)}</div>
             {modelGroups.length === 0 && <p className={css.catalogEmpty}>{props.t(modelQuery.trim() ? 'account.modelsNoMatches' : 'account.modelsEmpty')}</p>}
           </details>
-          {(account.lowBalance || (account.balance !== undefined && account.balance <= 0)) && <p className={css.warning} role="alert">{account.balance !== undefined && account.balance <= 0 ? props.t('account.balanceEmpty') : props.t('account.lowBalance')}</p>}
+          {lowBalance && <p className={css.warning} role="alert">{account.balance !== undefined && account.balance <= 0 ? props.t('account.balanceEmpty') : props.t('account.lowBalance')}</p>}
           <div className={css.billingGrid}>
             <section className={css.rechargeCard}>
               <div className={css.sectionHeading}><div><h3>{props.t('account.rechargeTitle')}</h3><p>{props.t('account.rechargeDescription')}</p></div><CreditCard size={19} /></div>

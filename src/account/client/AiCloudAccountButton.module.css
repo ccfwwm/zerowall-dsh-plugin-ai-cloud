@@ -1,8 +1,14 @@
 .trigger { width: 100%; min-width: 32px; height: 36px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; border: 0; border-radius: 8px; color: var(--dsw-alias-label-primary, #202428); background: transparent; cursor: pointer; font: inherit; text-align: left; }
 .triggerIcon { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .triggerIcon img { display: block; object-fit: contain; }
+.trigger[data-signed-in='true'] { min-height: 44px; height: auto; padding-block: 5px; }
+.triggerText { display: grid; min-width: 0; gap: 2px; }
+.triggerText > span, .triggerText > small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.triggerText > small { font-size: 11px; color: var(--dsw-alias-label-secondary, #687078); }
+.trigger[data-low-balance='true'] .triggerText > small { color: inherit; }
 .statusDot { position: absolute; right: -3px; bottom: -2px; width: 7px; height: 7px; border: 2px solid var(--dsw-alias-bg-layer-1, #fff); border-radius: 50%; background: #c43c3c; }
 .trigger[data-connection='online'] .statusDot { background: #27845a; }
+.trigger[data-low-balance='true'] .statusDot { background: #c1851c; }
 .trigger[data-connection='loading'] .statusDot, .trigger[data-connection='expired'] .statusDot, .trigger[data-connection='unavailable'] .statusDot { background: #c1851c; }
 .trigger:hover, .trigger:focus-visible, .iconButton:hover { color: var(--dsw-alias-label-primary, #202428); background: var(--dsw-alias-interactive-bg-hover, rgba(24,32,40,.08)); }
 .trigger:focus-visible { outline: 2px solid var(--dsw-focus-ring-color, #315b7d); outline-offset: -2px; }
