@@ -40,8 +40,10 @@ npm pack
 
 The resulting tarball contains the built DSH bundle and TypeScript declarations, locales, patch manifest, license, source notice, and this README. `node_modules`, tests, caches, and credentials are excluded. Git installs consume committed `lib/` artifacts without executing package lifecycle scripts; run `npm run check` before packing or committing those artifacts. CI checks that rebuilding leaves `lib/` unchanged.
 
+The sidebar account button, sign-in dialog, and plugin listing use the plugin's own ZeroWall Science PNG. Client artwork is embedded in the bundle; the `./icon` export supplies the same image to plugin managers without requiring any desktop files.
+
 The build uses the matching official Typert analyzer and emitter against the installed DSH declarations. It emits Host validation metadata and Client Remote namespaces, which the Client mounts before its account and image panels. `npm run test:package` installs the archive in a separate consumer and checks entry points and rejected invalid Remote inputs.
 
 ## Distribution
 
-This repository is public and uses the DSH bundle/manifest contract. DSH Discover indexes pin the Git commit before installation. ZeroWall's signed resource catalog is a separate channel: it verifies a signed catalog, immutable archive digest, and desktop/DSH compatibility before activation. The current `0.1.0-preview.3` release is intended for preview-channel validation; stable promotion requires a ZeroWall signing key and a successful clean-profile install test.
+This repository is public and uses the DSH bundle/manifest contract. DSH Discover indexes pin the Git commit before installation. ZeroWall's signed resource catalog is a separate channel: it verifies a signed catalog, immutable archive digest, and desktop/DSH compatibility before activation. The current `0.1.0-preview.4` release is intended for preview-channel validation; stable promotion requires a ZeroWall signing key and a successful clean-profile install test.

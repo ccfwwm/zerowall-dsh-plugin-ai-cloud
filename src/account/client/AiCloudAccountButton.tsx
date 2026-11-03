@@ -2,7 +2,7 @@ import type { AiCloudGroup, AiCloudModelSync } from '../shared/types.js'
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import QRCode from 'qrcode/lib/browser.js'
-import { Cloud, CreditCard, ExternalLink, Eye, EyeOff, LogOut, RefreshCw, Search, Send, ShieldCheck, X } from 'lucide-react'
+import { CreditCard, ExternalLink, Eye, EyeOff, LogOut, RefreshCw, Search, Send, ShieldCheck, X } from 'lucide-react'
 import type { SidebarFooterActionOwnerProps } from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type { PropsLocale, TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
 import { NS } from '../../base-client-helpers.js'
@@ -456,7 +456,7 @@ export function AiCloudAccountButton(props: Props) {
 
   return <>
     <button className={css.trigger} data-zerowall-footer-action data-connection={connection} type="button" onClick={() => { setOpen(true); void refresh() }} title={`${props.t('account.trigger')} · ${accountStatusText}`} aria-label={props.t('account.trigger')}>
-      <span className={css.triggerIcon} data-zerowall-footer-icon><Cloud size={18} aria-hidden="true" /><i className={css.statusDot} data-zerowall-footer-status-dot aria-hidden="true" /></span>{props.wide && <span>{props.t(signedIn ? 'account.centerTitle' : 'account.nav')}</span>}
+      <span className={css.triggerIcon} data-zerowall-footer-icon><img src={brandIcon} width={18} height={18} alt="" aria-hidden="true" /><i className={css.statusDot} data-zerowall-footer-status-dot aria-hidden="true" /></span>{props.wide && <span>{props.t(signedIn ? 'account.centerTitle' : 'account.nav')}</span>}
     </button>
     {(open || target) && createPortal(<div className={target ? css.embedded : css.backdrop} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setOpen(false) }}>
       <section className={css.panel} data-auth={!signedIn} role={target ? undefined : "dialog"} aria-modal={target ? undefined : true} aria-labelledby="zerowall-account-title">

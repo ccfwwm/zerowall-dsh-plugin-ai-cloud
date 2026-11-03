@@ -1,5 +1,6 @@
 .trigger { width: 100%; min-width: 32px; height: 36px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; border: 0; border-radius: 8px; color: var(--dsw-alias-label-primary, #202428); background: transparent; cursor: pointer; font: inherit; text-align: left; }
 .triggerIcon { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.triggerIcon img { display: block; object-fit: contain; }
 .statusDot { position: absolute; right: -3px; bottom: -2px; width: 7px; height: 7px; border: 2px solid var(--dsw-alias-bg-layer-1, #fff); border-radius: 50%; background: #c43c3c; }
 .trigger[data-connection='online'] .statusDot { background: #27845a; }
 .trigger[data-connection='loading'] .statusDot, .trigger[data-connection='expired'] .statusDot, .trigger[data-connection='unavailable'] .statusDot { background: #c1851c; }

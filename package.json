@@ -1,6 +1,6 @@
 {
   "name": "@zerowall/dsh-plugin-ai-cloud",
-  "version": "0.1.0-preview.3",
+  "version": "0.1.0-preview.4",
   "description": "ZeroWall account, model discovery, managed chat and image cloud for DSH",
   "keywords": [
     "dsh-plugin",
@@ -21,6 +21,7 @@
   },
   "main": "./lib/index.js",
   "types": "./lib/types/host/index.d.ts",
+  "icon": "./lib/icon.png",
   "exports": {
     ".": {
       "types": "./lib/types/host/index.d.ts",
@@ -44,7 +45,8 @@
       "types": "./lib/types/types.d.ts",
       "default": "./lib/types.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./icon": "./lib/icon.png"
   },
   "files": [
     "lib",

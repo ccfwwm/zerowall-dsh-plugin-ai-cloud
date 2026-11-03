@@ -1,9 +1,10 @@
 import { build } from 'esbuild'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { execFileSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 const pkg = JSON.parse(await readFile('package.json', 'utf8'))
 await mkdir('lib', { recursive: true })
+await copyFile('src/account/client/assets/zerowall-science-icon.png', 'lib/icon.png')
 execFileSync(process.execPath, ['scripts/generate-typert.mjs'], { stdio: 'inherit' })
 execFileSync(process.execPath, [createRequire(import.meta.url).resolve('typescript/bin/tsc'), '-p', 'tsconfig.build.json'], { stdio: 'inherit' })
 await build({ entryPoints: ['src/host/index.ts'], outfile: 'lib/index.js', bundle: true, platform: 'node', target: 'node24', format: 'esm', packages: 'external', tsconfig: 'tsconfig.json' })

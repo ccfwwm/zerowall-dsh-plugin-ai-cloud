@@ -17,11 +17,19 @@ for (const entry of ['.', './client', './types', './typert', './remote']) {
 }
 const consumer = await mkdtemp(join(tmpdir(), 'zerowall-package-consumer-'))
 try {
-  await writeFile(join(consumer, 'package.json'), JSON.stringify({ private: true, type: 'module' }))
+  const lock = JSON.parse(await readFile(join(root, 'package-lock.json'), 'utf8'))
+  // The consumer supplies the same DSH/Cordis host versions as the tested release.
+  const hostDependencies = { ...manifest.peerDependencies }
+  for (const name of ['@deepseek-ai/cordis-plugin-include', '@deepseek-ai/cordis-plugin-loader']) {
+    hostDependencies[name] = lock.packages['node_modules/' + name].version
+  }
+  await writeFile(join(consumer, 'package.json'), JSON.stringify({ private: true, type: 'module', dependencies: hostDependencies }))
   execFileSync(process.execPath, [npm, 'install', '--ignore-scripts', '--package-lock=false', '--no-audit', '--no-fund', join(root, pack.filename)], { cwd: consumer, stdio: 'inherit' })
   assert(createRequire(join(consumer, 'package.json')).resolve(manifest.name + '/package.json'), 'Host client discovery needs the public manifest export')
   const icon = await readFile(join(root, 'src/account/client/assets/zerowall-science-icon.png'), 'base64')
-  assert((await readFile(join(root, 'lib/client.js'), 'utf8')).includes(`data:image/png;base64,${icon}`), 'The account dialog icon must be bundled with the plugin')
+  const installed = createRequire(join(consumer, 'package.json'))
+  assert.equal(await readFile(installed.resolve(manifest.name + '/icon'), 'base64'), icon, 'The installed plugin must provide its own artwork')
+  assert((await readFile(installed.resolve(manifest.name + '/client'), 'utf8')).includes(`data:image/png;base64,${icon}`), 'Account and sidebar icons must be bundled with the installed plugin')
   await writeFile(join(consumer, 'consumer.ts'), `import type { apply } from '${manifest.name}';\nimport type { apply as clientApply } from '${manifest.name}/client';\nexport type HostPlugin = typeof apply;\nexport type ClientPlugin = typeof clientApply;\n`)
   execFileSync(process.execPath, [createRequire(import.meta.url).resolve('typescript/bin/tsc'), '--noEmit', '--strict', '--skipLibCheck', '--module', 'NodeNext', '--target', 'ES2023', join(consumer, 'consumer.ts')], { cwd: consumer, stdio: 'inherit' })
   execFileSync(process.execPath, ['--input-type=module', '-e', 'const plugin = await import(process.argv[1]); if (typeof plugin.apply !== "function") throw new Error("Missing host apply export");', manifest.name], { cwd: consumer, stdio: 'inherit' })
