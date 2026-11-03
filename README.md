@@ -46,4 +46,4 @@ The build uses the matching official Typert analyzer and emitter against the ins
 
 ## Distribution
 
-This repository is public and uses the DSH bundle/manifest contract. DSH Discover indexes pin the Git commit before installation. ZeroWall's signed resource catalog is a separate channel: it verifies a signed catalog, immutable archive digest, and desktop/DSH compatibility before activation. The current `0.1.0-preview.5` release is intended for preview-channel validation; stable promotion requires a ZeroWall signing key and a successful clean-profile install test.
+This repository is public and uses the DSH bundle/manifest contract. DSH Discover indexes pin the Git commit before installation. ZeroWall's signed resource catalog is a separate channel: it verifies a signed catalog, immutable archive digest, and desktop/DSH compatibility before activation. The current `0.1.0-preview.6` release is intended for preview-channel validation; stable promotion requires a ZeroWall signing key and a successful clean-profile install test.

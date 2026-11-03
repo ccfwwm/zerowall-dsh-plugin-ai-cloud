@@ -192,4 +192,3 @@
 .panel[data-auth=true] .header { padding: 20px 24px 12px; border-bottom: 0; }
 .panel[data-auth=true] .auth { padding: 12px 24px 24px; gap: 16px; }
 .panel[data-auth=true] .authActions { grid-template-columns: 1fr; }
-.panel[data-auth=true] .authActions > .secondary:first-child { display: none; }
