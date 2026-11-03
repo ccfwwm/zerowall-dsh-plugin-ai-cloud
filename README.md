@@ -12,7 +12,7 @@ https://github.com/ccfwwm/zerowall-dsh-plugin-ai-cloud
 
 Restart DSH after installation. The plugin is also listed by the ZeroWall Science preview Discover index when that index is configured.
 
-Open **AI Cloud** at the bottom of the sidebar to sign in and refresh models. Select a discovered managed model in a conversation for text calls. Open **AI Cloud images** in the sidebar for image generation, task recovery, previews, and downloads. Image submission is billed by the selected platform; refreshing a task does not submit it again. Preview downloads accept PNG, JPEG, and WebP up to 8 MiB. Larger artifacts remain in the Host media cache.
+Use **Sign in to AI Cloud** at the bottom of the sidebar to sign in or register and refresh models. Open **Settings → Models** to manage custom providers and models. The plugin adds no AI platform, image-generation, or My models sidebar entry and keeps the shell's Settings button. Select a discovered managed model in a conversation for text calls. Image/media calls remain available through the cloud service and generated remotes; this preview does not mount a standalone image page. Image submission is billed by the selected platform; refreshing a task does not submit it again. Preview downloads accept PNG, JPEG, and WebP up to 8 MiB. Larger artifacts remain in the Host media cache.
 
 When installing into a plain DSH profile with pnpm 11, explicitly deny the unused `@google/genai` and `protobufjs` installation scripts in that profile's `pnpm-workspace.yaml` (`allowBuilds` values `false`), then retry. ZeroWall Desktop seeds those denials. The plugin itself has no installation lifecycle scripts.
 
@@ -44,4 +44,4 @@ The build uses the matching official Typert analyzer and emitter against the ins
 
 ## Distribution
 
-This repository is public and uses the DSH bundle/manifest contract. DSH Discover indexes pin the Git commit before installation. ZeroWall's signed resource catalog is a separate channel: it verifies a signed catalog, immutable archive digest, and desktop/DSH compatibility before activation. The current `0.1.0-preview.2` release is intended for preview-channel validation; stable promotion requires a ZeroWall signing key and a successful clean-profile install test.
+This repository is public and uses the DSH bundle/manifest contract. DSH Discover indexes pin the Git commit before installation. ZeroWall's signed resource catalog is a separate channel: it verifies a signed catalog, immutable archive digest, and desktop/DSH compatibility before activation. The current `0.1.0-preview.3` release is intended for preview-channel validation; stable promotion requires a ZeroWall signing key and a successful clean-profile install test.

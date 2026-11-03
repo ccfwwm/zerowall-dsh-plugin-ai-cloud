@@ -6,6 +6,7 @@ import { Cloud, CreditCard, ExternalLink, Eye, EyeOff, LogOut, RefreshCw, Search
 import type { SidebarFooterActionOwnerProps } from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type { PropsLocale, TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
 import { NS } from '../../base-client-helpers.js'
+import brandIcon from './assets/zerowall-science-icon.png'
 import { accountSurface } from './account-surface.js'
 import { accountConnection, gatewayPlatformUrl } from './platform.js'
 import css from './AiCloudAccountButton.module.css'
@@ -455,12 +456,12 @@ export function AiCloudAccountButton(props: Props) {
 
   return <>
     <button className={css.trigger} data-zerowall-footer-action data-connection={connection} type="button" onClick={() => { setOpen(true); void refresh() }} title={`${props.t('account.trigger')} · ${accountStatusText}`} aria-label={props.t('account.trigger')}>
-      <span className={css.triggerIcon} data-zerowall-footer-icon><Cloud size={18} aria-hidden="true" /><i className={css.statusDot} data-zerowall-footer-status-dot aria-hidden="true" /></span>{props.wide && <span>{props.t('account.nav')}</span>}
+      <span className={css.triggerIcon} data-zerowall-footer-icon><Cloud size={18} aria-hidden="true" /><i className={css.statusDot} data-zerowall-footer-status-dot aria-hidden="true" /></span>{props.wide && <span>{props.t(signedIn ? 'account.centerTitle' : 'account.nav')}</span>}
     </button>
     {(open || target) && createPortal(<div className={target ? css.embedded : css.backdrop} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setOpen(false) }}>
       <section className={css.panel} data-auth={!signedIn} role={target ? undefined : "dialog"} aria-modal={target ? undefined : true} aria-labelledby="zerowall-account-title">
         <header className={css.header}>
-          <div className={css.headerIdentity}><span className={css.brandIcon}><Cloud size={22} aria-hidden="true" /></span><div><p>ZeroWall Science</p><h2 id="zerowall-account-title">{restoring ? props.t('account.restoring') : signedIn ? props.t('account.centerTitle') : forgotMode ? props.t('account.resetTitle') : props.t('account.title')}</h2></div></div>
+          <div className={css.headerIdentity}><img className={css.brandIcon} src={brandIcon} alt="" aria-hidden="true" /><div><p>ZeroWall Science</p><h2 id="zerowall-account-title">{restoring ? props.t('account.restoring') : signedIn ? props.t('account.centerTitle') : forgotMode ? props.t('account.resetTitle') : props.t('account.title')}</h2></div></div>
           <div className={css.headerActions}>
             {platformUrl !== undefined && <button className={css.iconButton} type="button" onClick={() => openExternal(platformUrl)} title={props.t('account.openPlatform')} aria-label={props.t('account.openPlatform')}><ExternalLink size={18} /></button>}
             {!target && <button className={css.iconButton} type="button" onClick={() => setOpen(false)} title={props.t('common.close')} aria-label={props.t('common.close')}><X size={18} /></button>}
@@ -474,11 +475,7 @@ export function AiCloudAccountButton(props: Props) {
           {!target && <button className={css.secondary} type="button" onClick={() => setOpen(false)}>{props.t('common.close')}</button>}
         </div> : !signedIn ? <form className={css.auth} noValidate onSubmit={event => { event.preventDefault(); void authenticate() }}>
           {account?.status === 'authExpired' && <p className={css.notice}>{props.t('account.authExpired')}</p>}
-          {!forgotMode && <section className={css.capabilities} aria-label={props.t('account.capabilities')}>
-            <strong>{props.t('account.capabilities')}</strong>
-            <span>{props.t('account.capabilitiesNote')}</span>
-          </section>}
-          <p className={css.authLead}>{props.t(forgotMode ? 'account.resetLead' : registering ? 'account.registerLead' : 'account.authLead')}</p>
+          {forgotMode && <p className={css.authLead}>{props.t('account.resetLead')}</p>}
           <GatewaySelector gateways={gateways} selected={selectedGateway} disabled={busy} onChange={switchGateway} t={props.t} />
           {!forgotMode && <div className={css.segmented} role="group" aria-label={props.t('account.actions')}>
             <button type="button" aria-pressed={!registering} disabled={busy} onClick={() => changeMode('login')}>{props.t('account.login')}</button>
@@ -502,7 +499,6 @@ export function AiCloudAccountButton(props: Props) {
             <p id="zerowall-code-help" className={codeNotice ? css.codeNotice : css.authLead} role={codeNotice ? 'status' : undefined}>{codeNotice ?? props.t('account.codeHelp')}</p>
           </div>}
           {!registering && !forgotMode && <button className={css.textButton} type="button" disabled={busy} onClick={() => changeMode('reset')}>{props.t('account.forgotPassword')}</button>}
-          {!forgotMode && <p className={css.savedHint}>{props.t(rememberPassword ? 'account.savedHint' : 'account.unsavedHint')}</p>}
           {forgotMode && (config?.passwordResetEnabled === false || config?.captchaEnabled) && <p className={css.notice}>{props.t('account.resetUnavailable')}</p>}
           <div className={css.authActions}>
             {!target && <button className={css.secondary} type="button" onClick={() => setOpen(false)}>{props.t('account.skip')}</button>}

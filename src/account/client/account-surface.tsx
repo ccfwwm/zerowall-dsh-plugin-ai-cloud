@@ -11,5 +11,5 @@ export const accountSurface = {
 // Keep one mounted controller for the settings page and sidebar dialog.
 export function AccountSection() {
   const attach = useCallback((node: HTMLDivElement | null) => { target = node; for (const listener of listeners) listener() }, [])
-  return <div ref={attach} />
+  return <div ref={attach} style={{ height: '100%', minHeight: 0, overflow: 'auto' }} />
 }
