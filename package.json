@@ -1,10 +1,14 @@
 {
   "name": "@zerowall/dsh-plugin-ai-cloud",
-  "version": "0.1.0-preview.1",
+  "version": "0.1.0-preview.2",
   "description": "ZeroWall account, model discovery, managed chat and image cloud for DSH",
-  "keywords": ["dsh-plugin", "ai-cloud", "zerowall-science"],
+  "keywords": [
+    "dsh-plugin",
+    "ai-cloud",
+    "zerowall-science"
+  ],
   "type": "module",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "author": "ZeroWall Science",
   "repository": {
     "type": "git",
@@ -27,14 +31,31 @@
       "default": "./lib/client.js"
     },
     "./locale/en.json": "./locale/en.json",
-    "./locale/zh.json": "./locale/zh.json"
+    "./locale/zh.json": "./locale/zh.json",
+    "./typert": {
+      "types": "./lib/typert.host.d.ts",
+      "default": "./lib/typert.host.js"
+    },
+    "./remote": {
+      "types": "./lib/typert.remote-client.d.ts",
+      "default": "./lib/typert.remote-client.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types.js"
+    }
   },
   "files": [
     "lib",
     "cordis.patch.yml",
     "locale",
+    "NOTICE.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "lib/typert.host.js",
+    "lib/typert.host.d.ts",
+    "lib/typert.remote-client.js",
+    "lib/typert.remote-client.d.ts"
   ],
   "dsh": {
     "bundle": {
@@ -51,7 +72,9 @@
         "@deepseek-ai/dsh-client-ui-conversation",
         "@deepseek-ai/dsh-client-ui-settings-models",
         "@deepseek-ai/dsh-client-ui-sidebar",
-        "@deepseek-ai/dsh-client-ui-slots"
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-client-ui-layout"
       ],
       "external": [
         "react",
@@ -63,13 +86,14 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:package": "node scripts/verify-package.mjs",
     "check": "npm run typecheck && npm test && npm run build",
-    "prepare": "npm run build",
-    "prepack": "npm run build"
+    "pack:release": "npm run check && npm pack"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.6-alpha.1",
     "@deepseek-ai/dsh-agent": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-api-remotes": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-api-session-controller": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-locale": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-ui-conversation": "0.2.2-alpha.2",
@@ -82,14 +106,17 @@
     "@deepseek-ai/dsh-credentials": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-llm": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-llm-pi-ai": "0.2.2-alpha.2",
-    "@deepseek-ai/dsh-typert-protocol": "0.2.2-alpha.2"
+    "@deepseek-ai/dsh-typert-protocol": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-layout": "0.2.2-alpha.2"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.6-alpha.1",
     "@deepseek-ai/dsh-agent": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-api-remotes": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-api-session-controller": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-locale": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-ui-conversation": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-layout": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-ui-model-selection": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-ui-renderer": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-client-ui-settings": "0.2.2-alpha.2",
@@ -99,6 +126,7 @@
     "@deepseek-ai/dsh-credentials": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-llm": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-llm-pi-ai": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-typert-generator": "0.2.2-alpha.2",
     "@deepseek-ai/dsh-typert-protocol": "0.2.2-alpha.2",
     "@types/node": "^24.0.0",
     "@types/react": "^18.3.0",

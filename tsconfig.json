@@ -13,7 +13,12 @@
       "node",
       "react",
       "react-dom"
-    ]
+    ],
+    "paths": {
+      "@zerowall/dsh-plugin-ai-cloud/types": [
+        "./src/types.ts"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",

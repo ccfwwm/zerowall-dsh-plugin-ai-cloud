@@ -15,32 +15,14 @@ import { AccountSection } from './account-surface.js'
 import { AiCloudAccountButton, type Actions } from './AiCloudAccountButton.tsx'
 import { ManagedProviderCard } from './ManagedProviderCard.js'
 import { NS, unwrapRemoteResult } from '../../base-client-helpers.js'
+import { zh as accountZh, en as accountEn } from './locales.js'
 
-type AccountRemote = {
-  publicConfig(gatewayBaseUrl?: string): Promise<RemoteResult<any>>
-  gateways(): Promise<RemoteResult<any>>
-  groupCatalog(): Promise<RemoteResult<any>>
-  selectGateway(baseUrl: string): Promise<RemoteResult<AiCloudAccountSnapshot>>
-  sendCode(input: { email: string; gatewayBaseUrl?: string }): Promise<RemoteResult<any>>
-  forgotPassword(input: { email: string; gatewayBaseUrl?: string }): Promise<RemoteResult<void>>
-  login(input: { email: string; password: string; rememberPassword?: boolean }): Promise<RemoteResult<AiCloudAccountSnapshot>>
-  register(input: { email: string; password: string; verificationCode: string; rememberPassword?: boolean; gatewayBaseUrl?: string }): Promise<RemoteResult<AiCloudAccountSnapshot>>
-  current(): Promise<RemoteResult<AiCloudAccountSnapshot>>
-  forgetLogin(): Promise<RemoteResult<void>>
-  savedLogin(): Promise<RemoteResult<AiCloudSavedLogin | undefined>>
-  relogin(): Promise<RemoteResult<AiCloudAccountSnapshot>>
-  logout(): Promise<RemoteResult<void>>
-  discoverModels(): Promise<RemoteResult<AiCloudAccountSnapshot>>
-  checkoutInfo(): Promise<RemoteResult<any>>
-  listOrders(): Promise<RemoteResult<any>>
-  createOrder(input: { amount: number; paymentType: string }): Promise<RemoteResult<any>>
-  getOrder(input: { orderId: number }): Promise<RemoteResult<any>>
-  verifyOrder(input: { outTradeNo: string }): Promise<RemoteResult<any>>
-}
+type AccountRemote = import('@deepseek-ai/dsh-typert-protocol').TypertClientRemote['zerowallAccount']
 
 export const inject = ['slots', 'locale', 'remote', 'connection', 'remote.zerowallAccount', 'remote.session']
 
 export function apply(ctx: ClientContext): void {
+  ctx.effect(() => ctx.locale.register(NS, { zh: accountZh, en: accountEn }), 'account: dictionaries')
   ctx.effect(() => ctx.locale.register(MODEL_NS, { zh, en }), 'account: model dictionaries')
   const t = ctx.locale.bind(NS)
   const modelText = ctx.locale.bind(MODEL_NS)

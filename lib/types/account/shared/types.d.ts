@@ -1,0 +1,189 @@
+export type AiCloudAccountStatus = 'signedOut' | 'signedIn' | 'authExpired';
+export type AiCloudBalanceFreshness = 'current' | 'stale';
+export type ImageProtocol = 'openai' | 'gemini';
+export type ImageProtocolSource = 'group-type' | 'openai-default';
+/** Public group information returned by the account's selected gateway. */
+export interface AiCloudGroup {
+    groupId: string;
+    groupName: string;
+    /** Explicit group protocol; older cached snapshots may omit it and default to OpenAI. */
+    protocol?: ImageProtocol;
+    protocolSource?: ImageProtocolSource;
+    platform?: string;
+    description?: string;
+    rateMultiplier?: number;
+}
+export interface AiCloudGroupCatalog {
+    gatewayBaseUrl?: string;
+    groups: AiCloudGroup[];
+    routes: Array<{
+        providerId: string;
+        groupId: string;
+        modelId: string;
+    }>;
+}
+/** Old snapshots can still name groups, without inventing a price or description. */
+export declare function accountGroupCatalog(account: Pick<AiCloudAccountSnapshot, 'status' | 'gatewayBaseUrl' | 'groups' | 'models' | 'mediaModels'>): AiCloudGroupCatalog;
+export declare function normalizeImageProtocol(value: unknown): ImageProtocol;
+export declare function imageQualityChoices(_modelId: string, declared: string[], _groupName?: string): string[];
+export declare function mediaModelIdentity(model: Pick<AiCloudMediaModel, 'providerId' | 'groupId' | 'modelId' | 'profileId'>): string;
+/** Repeated catalog rows must not create repeated choices; distinct profiles remain distinct. */
+export declare function uniqueMediaModels<T extends AiCloudMediaModel>(models: T[]): T[];
+export interface AiCloudPublicConfig {
+    registrationEnabled: boolean;
+    emailVerifyEnabled: boolean;
+    invitationCodeEnabled: boolean;
+    captchaEnabled: boolean;
+    passwordResetEnabled?: boolean;
+    rechargeUrl?: string;
+    lowBalanceThreshold?: number;
+}
+export interface AiCloudManagedModel {
+    providerId: string;
+    groupId: string;
+    groupName: string;
+    modelId: string;
+    baseUrl: string;
+    /** Capability exposed by the managed group. Image routes never enter chat. */
+    capability?: 'chat' | 'image-generation' | 'media';
+    imageProtocol?: ImageProtocol;
+    imageProtocolSource?: ImageProtocolSource;
+    resolutions?: string[];
+    aspectRatios?: string[];
+    imageSizes?: string[];
+    supportsImageEdit?: boolean;
+    supportsImageReferences?: boolean;
+    supportsImageMask?: boolean;
+    /** Response formats explicitly declared by the upstream capability catalog. */
+    imageResponseFormats?: Array<'url' | 'b64_json'>;
+    /** Explicit image quality choices for this group/model route. Empty means omit quality. */
+    qualities?: string[];
+    stale?: boolean;
+    contextWindow?: number;
+    maxOutputTokens?: number;
+    capacitySource?: 'gateway' | 'models-dev';
+}
+export interface AiCloudModelSync {
+    checkedAt: string;
+    status: 'succeeded' | 'partial' | 'failed';
+    groups: Array<{
+        groupId: string;
+        groupName: string;
+        status: 'succeeded' | 'failed';
+        count: number;
+        checkedAt: string;
+        error?: string;
+    }>;
+}
+export interface AiCloudMediaModel extends AiCloudManagedModel {
+    capability: 'media';
+    profileId: string;
+    version: string;
+    mediaType: 'image' | 'video' | 'audio';
+    operations: string[];
+    referenceField?: string;
+    referenceShape?: string;
+    requestFormat?: 'legacy' | 'yunfei_multimodal' | 'v6k_url' | 'unified';
+    duration: {
+        mode?: string;
+        values?: number[];
+        min?: number | null;
+        max?: number | null;
+        default?: number | null;
+        required?: boolean;
+    };
+    sizes: string[];
+    resolutions: string[];
+    aspectRatios: string[];
+    qualities: string[];
+    formats: string[];
+    materials: Record<string, {
+        formats?: string[];
+        reference_field?: string;
+        max_count?: number | null;
+        max_file_bytes?: number | null;
+        max_duration_seconds?: string | null;
+    }>;
+    pollSeconds: number;
+    maxRequestBytes?: number;
+    observationSeconds?: number;
+}
+export interface AiCloudAccountSnapshot {
+    status: AiCloudAccountStatus;
+    /** A transient restore failure may be retried in the background; explicit logout and rejected credentials never opt in. */
+    autoLoginRetryable?: boolean;
+    email?: string;
+    balance?: number;
+    currency?: string;
+    balanceFreshness: AiCloudBalanceFreshness;
+    rechargeUrl?: string;
+    lowBalance: boolean;
+    /** Gateway selected for this account session. Public endpoint metadata only. */
+    gatewayBaseUrl?: string;
+    groups?: AiCloudGroup[];
+    models: AiCloudManagedModel[];
+    modelSync?: AiCloudModelSync;
+    mediaModels?: AiCloudMediaModel[];
+    mediaSync?: AiCloudModelSync;
+}
+export interface AiCloudGateway {
+    baseUrl: string;
+    label: string;
+    preferred: boolean;
+}
+export interface AiCloudLoginRequest {
+    email: string;
+    password: string;
+    rememberPassword?: boolean;
+}
+export interface AiCloudSavedLogin {
+    email: string;
+    password: string;
+    baseUrl: string;
+    rememberPassword: true;
+}
+export interface AiCloudRegisterRequest {
+    email: string;
+    password: string;
+    verificationCode: string;
+    rememberPassword?: boolean;
+    gatewayBaseUrl?: string;
+}
+export interface AiCloudSendCodeRequest {
+    email: string;
+    gatewayBaseUrl?: string;
+}
+export interface AiCloudSendCodeResult {
+    countdown: number;
+    gatewayBaseUrl: string;
+}
+export interface AiCloudForgotPasswordRequest {
+    email: string;
+    gatewayBaseUrl?: string;
+}
+export interface AiCloudPaymentOrder {
+    id: number;
+    outTradeNo: string;
+    status: string;
+    amount: number;
+    paymentType: string;
+    paymentUrl?: string;
+    qrCode?: string;
+    createdAt?: string;
+}
+export interface AiCloudCreateOrderRequest {
+    amount: number;
+    paymentType: string;
+}
+export interface AiCloudGetOrderRequest {
+    orderId: number;
+}
+export interface AiCloudVerifyOrderRequest {
+    outTradeNo: string;
+}
+export interface AiCloudCheckoutInfo {
+    enabled: boolean;
+    minimumAmount: number;
+    paymentTypes: string[];
+    rechargeUrl?: string;
+}
