@@ -30,6 +30,8 @@ Use **Sign out** to remove the active session. Disable or uninstall the plugin t
 
 ## Compatibility and development
 
+Use the canonical `C:\codekg\scienceproject\zerowall-dsh-plugin-ai-cloud` checkout on `main`; keep one active source directory per plugin. See the shared [ZeroWall development, migration, packaging, and testing guide](https://github.com/ccfwwm/zerowallscience-newui/blob/main/docs/developer/zerowall/README.zh.md) and [AGENTS.md](AGENTS.md).
+
 Requires Node.js 24.9 or later and npm for local development. The published bundle declares DSH `>=0.2.2-alpha.2 <0.3.0-0`.
 
 ```sh
